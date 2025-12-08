@@ -1,0 +1,80 @@
+{% extends 'attendance/base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-graduation-cap text-primary me-2"></i>Manage Courses
+        </h2>
+        <a href="/attendance/admin/courses/create/" class="btn btn-success">
+            <i class="fas fa-plus me-1"></i> Add New Course
+        </a>
+    </div>
+
+    <!-- Courses Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if courses %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Academic Level</th>
+                            <th>Duration</th>
+                            <th>Units</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                        <tr>
+                            <td><strong>{{ course.name }}</strong></td>
+                            <td>
+                                <span class="badge bg-info">
+                                    Year {{ course.level.year }} Semester {{ course.level.semester }}
+                                </span>
+                            </td>
+                            <td>{{ course.duration_years }} year{{ course.duration_years|pluralize }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ course.unit_set.count }} units</span>
+                            </td>
+                            <td>
+                                {% if course.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="/attendance/admin/courses/edit/{{ course.id }}/"
+                                    class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="/attendance/admin/courses/delete/{{ course.id }}/"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this course?');">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">No Courses Found</h4>
+                                <p class="text-muted">Start by adding your first course</p>
+                                <a href="/attendance/admin/courses/create/" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i> Create First Course
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

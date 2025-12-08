@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user"></i> Profile Information</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <img src="https://ui-avatars.com/api/?name={{ user.get_full_name }}&background=007bff&color=fff&size=200"
+                            class="rounded-circle" width="150" height="150" alt="Profile">
+                    </div>
+                    <h4>{{ user.get_full_name }}</h4>
+                    <p class="text-muted">{{ user.get_user_type_display }}</p>
+
+                    <hr>
+
+                    <div class="text-start">
+                        <p><strong>Username:</strong> {{ user.username }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        {% if user.student_id %}
+                        <p><strong>Student ID:</strong> {{ user.student_id }}</p>
+                        {% endif %}
+                        {% if user.lecturer_id %}
+                        <p><strong>Lecturer ID:</strong> {{ user.lecturer_id }}</p>
+                        {% endif %}
+                        {% if user.department %}
+                        <p><strong>Department:</strong> {{ user.department }}</p>
+                        {% endif %}
+                        {% if user.phone_number %}
+                        <p><strong>Phone:</strong> {{ user.phone_number }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            {% if user.user_type == 'student' %}
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Attendance Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Student-specific content -->
+                    <div class="alert alert-info">
+                        <h6>Student Profile Details</h6>
+                        {% if user.student_profile %}
+                        <p>Enrollment Date: {{ user.student_profile.enrollment_date }}</p>
+                        <p>Semester: {{ user.student_profile.semester }}</p>
+                        <p>Year of Study: {{ user.student_profile.year_of_study }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% elif user.user_type == 'lecturer' %}
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-chalkboard-teacher"></i> Lecturer Information</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Lecturer-specific content -->
+                    <div class="alert alert-warning">
+                        <h6>Lecturer Profile Details</h6>
+                        {% if user.lecturer_profile %}
+                        <p>Employee ID: {{ user.lecturer_profile.employee_id }}</p>
+                        {% if user.lecturer_profile.qualification %}
+                        <p>Qualification: {{ user.lecturer_profile.qualification }}</p>
+                        {% endif %}
+                        {% if user.lecturer_profile.specialization %}
+                        <p>Specialization: {{ user.lecturer_profile.specialization }}</p>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

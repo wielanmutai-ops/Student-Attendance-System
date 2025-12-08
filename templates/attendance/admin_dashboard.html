@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-cog"></i> Admin Dashboard</h2>
+            <p class="text-muted">Welcome, {{ user.get_full_name }}</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card stat-card total">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Total Students</h6>
+                            <h3 class="mb-0">{{ total_students|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card pending">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Total Lecturers</h6>
+                            <h3 class="mb-0">{{ total_lecturers|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-chalkboard-teacher fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card present">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Pending Approvals</h6>
+                            <h3 class="mb-0">{{ pending_lecturers|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-clock fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card absent">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Total Courses</h6>
+                            <h3 class="mb-0">{{ total_courses|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-graduation-cap fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row of Statistics -->
+    <div class="row mt-3">
+        <div class="col-md-3">
+            <div class="card stat-card total">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Total Units</h6>
+                            <h3 class="mb-0">{{ total_units|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-book fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card pending">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Unassigned Units</h6>
+                            <h3 class="mb-0">{{ unassigned_units|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-exclamation-circle fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card present">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Active Sessions</h6>
+                            <h3 class="mb-0">{{ active_sessions|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-check fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card absent">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Pending Reports</h6>
+                            <h3 class="mb-0">{{ pending_reports|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-file-alt fa-2x text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-chalkboard-teacher"></i> Lecturer Management</h5>
+                </div>
+                <div class="card-body">
+                    <p>Manage lecturer accounts, approvals, and permissions.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'create_lecturer' %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-user-plus"></i> Create Lecturer
+                        </a>
+                        <a href="{% url 'manage_lecturers' %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-users-cog"></i> Manage Lecturers
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap"></i> Academic Management</h5>
+                </div>
+                <div class="card-body">
+                    <p>Manage courses, levels, units, and assignments.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'manage_levels' %}" class="btn btn-outline-primary btn-sm">Manage Levels</a>
+                        <a href="{% url 'manage_courses' %}" class="btn btn-outline-primary btn-sm">Manage Courses</a>
+                        <a href="{% url 'manage_units' %}" class="btn btn-outline-primary btn-sm">Manage Units</a>
+                        <a href="{% url 'assign_units' %}" class="btn btn-outline-primary btn-sm">Assign Units</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-alt"></i> Reports & Admin</h5>
+                </div>
+                <div class="card-body">
+                    <p>Review reports and access system administration.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin_review_reports' %}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-file-import"></i> Review Reports
+                        </a>
+                        <a href="/admin/" target="_blank" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-tools"></i> Django Admin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-history"></i> Quick Actions & Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-user-tie text-warning"></i> Lecturer Management</h6>
+                            <div class="list-group">
+                                <a href="{% url 'create_lecturer' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-user-plus text-success"></i>
+                                    <span class="ms-2">Create New Lecturer Account</span>
+                                </a>
+                                <a href="{% url 'manage_lecturers' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-user-check text-primary"></i>
+                                    <span class="ms-2">Approve/Suspend Lecturers</span>
+                                </a>
+                                <a href="{% url 'assign_units' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-tasks text-info"></i>
+                                    <span class="ms-2">Assign Units to Lecturers</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-graduation-cap text-primary"></i> Academic Management</h6>
+                            <div class="list-group">
+                                <a href="{% url 'create_level' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-layer-group text-primary"></i>
+                                    <span class="ms-2">Create Academic Level</span>
+                                </a>
+                                <a href="{% url 'create_course' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-graduation-cap text-success"></i>
+                                    <span class="ms-2">Create New Course</span>
+                                </a>
+                                <a href="{% url 'create_unit' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-book text-warning"></i>
+                                    <span class="ms-2">Create New Unit</span>
+                                </a>
+                                <a href="{% url 'manage_units' %}" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-edit text-info"></i>
+                                    <span class="ms-2">Edit/Delete Units</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h6><i class="fas fa-chart-line text-success"></i> System Monitoring</h6>
+                            <div class="alert alert-light border">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <strong>System Status:</strong> <span class="text-success">Operational</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Last Updated:</strong> {{ current_time|date:"F d, Y H:i" }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <strong>Admin Role:</strong> {{ user.get_user_type_display }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> System Overview</h6>
+                                <p class="mb-0">
+                                    Welcome to the Admin Dashboard. You have full control over the attendance system.
+                                    Use the quick action cards above or the links in the sidebar to manage different
+                                    aspects of the system.
+                                    You can create and manage academic structures, assign units to lecturers, review
+                                    attendance reports,
+                                    and monitor system activity.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

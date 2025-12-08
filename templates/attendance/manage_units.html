@@ -1,0 +1,161 @@
+﻿{% extends "attendance/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="fas fa-book text-primary me-2"></i>Manage Units
+            </h2>
+            <p class="text-muted mb-0">View and manage all academic units</p>
+        </div>
+        <a href="{% url 'create_unit' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Add New Unit
+        </a>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Units Table -->
+    <div class="card border-0 shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0">Unit Code</th>
+                            <th class="border-0">Unit Name</th>
+                            <th class="border-0">Course</th>
+                            <th class="border-0">Lecturers</th> <!-- CHANGED: Lecturer → Lecturers (plural) -->
+                            <th class="border-0">Academic Level</th>
+                            <th class="border-0">Type</th>
+                            <th class="border-0 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unit in units %}
+                        <tr>
+                            <td>
+                                <strong class="text-primary">{{ unit.code }}</strong>
+                            </td>
+                            <td>{{ unit.name }}</td>
+                            <td>
+                                {% if unit.course %}
+                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
+                                    <i class="fas fa-graduation-cap me-1"></i>{{ unit.course.code }}
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
+                                    <i class="fas fa-times me-1"></i>No Course
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if unit.lecturers.all %} <!-- CHANGED: unit.lecturer → unit.lecturers.all -->
+                                    {% for lecturer in unit.lecturers.all %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 mb-1 d-inline-block">
+                                        <i class="fas fa-chalkboard-teacher me-1"></i>{{ lecturer.user.get_full_name|default:lecturer.user.username }}
+                                    </span>
+                                    {% if not forloop.last %}<br>{% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">
+                                        <i class="fas fa-exclamation-circle me-1"></i>Unassigned
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if unit.academic_level %}
+                                <span class="badge bg-dark bg-opacity-10 text-dark border border-dark border-opacity-25">
+                                    <i class="fas fa-calendar-alt me-1"></i>{{ unit.academic_level.name }}
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary">
+                                    <i class="fas fa-times me-1"></i>Not Set
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if unit.is_core %}
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+                                    <i class="fas fa-star me-1"></i>Core
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
+                                    <i class="fas fa-circle me-1"></i>Elective
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'edit_unit' unit.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'delete_unit' unit.id %}" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Are you sure you want to delete unit \"{{ unit.name }}\"? This action cannot be undone.');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="py-4">
+                                    <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">No Units Found</h4>
+                                    <p class="text-muted mb-4">Start by adding your first academic unit to the system</p>
+                                    <a href="{% url 'create_unit' %}" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i> Create First Unit
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Footer -->
+    {% if units %}
+    <div class="mt-3">
+        <small class="text-muted">
+            <i class="fas fa-info-circle me-1"></i>
+            Showing {{ units|length }} unit{{ units|pluralize }}
+        </small>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Additional JavaScript for table interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Add row hover effects
+    const tableRows = document.querySelectorAll('tbody tr');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(0, 123, 255, 0.05)';
+        });
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
+</script>
+{% endblock %}

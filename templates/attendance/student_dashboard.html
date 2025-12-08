@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-user-graduate"></i> Student Dashboard</h2>
+            <p class="text-muted">Welcome, {{ user.get_full_name }}</p>
+        </div>
+    </div>
+
+    <!-- Attendance Statistics -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card stat-card total">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Total Sessions</h6>
+                            <h3 class="mb-0">{{ total_sessions }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-alt fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card stat-card present">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Attended</h6>
+                            <h3 class="mb-0">{{ attended_sessions }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card stat-card pending">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Attendance Rate</h6>
+                            <h3 class="mb-0">{{ attendance_percentage }}%</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-chart-line fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                            style="--progress-width: calc({{ attendance_percentage }}% * 1); width: var(--progress-width);"
+                            aria-valuenow="{{ attendance_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle"></i> Mark Attendance</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="attendance-code-display mb-4">
+                        <h6>Enter code from your lecturer</h6>
+                        <div class="d-inline-block p-3 border rounded">
+                            <i class="fas fa-qrcode fa-3x text-muted"></i>
+                        </div>
+                    </div>
+                    <a href="{% url 'mark_attendance' %}" class="btn btn-gradient btn-lg px-5">
+                        <i class="fas fa-fingerprint"></i> Mark Attendance Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-book"></i> Enrolled Units</h5>
+                </div>
+                <div class="card-body">
+                    {% if units %}
+                    <div class="list-group">
+                        {% for unit in units %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ unit.name }}</h6>
+                                <small>{{ unit.code }}</small>
+                            </div>
+                            <small class="text-muted">Lecturer: {{ unit.lecturer.user.get_full_name }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        You are not enrolled in any units yet.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Attendance -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history"></i> Today's Attendance</h5>
+                </div>
+                <div class="card-body">
+                    {% if today_attendance %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Unit</th>
+                                    <th>Time</th>
+                                    <th>Code Used</th>
+                                    <th>Marked At</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in today_attendance %}
+                                <tr>
+                                    <td>{{ record.session.unit.name }}</td>
+                                    <td>{{ record.session.start_time }} - {{ record.session.end_time }}</td>
+                                    <td><code>{{ record.marked_with_code }}</code></td>
+                                    <td>{{ record.marked_at|time }}</td>
+                                    <td>
+                                        <span class="badge bg-success">Present</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        No attendance marked for today yet.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

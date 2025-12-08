@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Lecturer Account{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0"><i class="fas fa-chalkboard-teacher"></i> Create Lecturer Account</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Admin Instructions:</h6>
+                        <p class="mb-0">
+                            Create lecturer accounts here. The lecturer will use their email to login.
+                            You can approve the account immediately or leave it pending.
+                        </p>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-user-plus"></i> Create Lecturer Account
+                            </button>
+                            <a href="{% url 'manage_lecturers' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Lecturer Management
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

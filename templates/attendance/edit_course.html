@@ -1,0 +1,81 @@
+cat > templates/attendance/edit_course.html << 'EOF' <!DOCTYPE html>
+    <html>
+
+    <head>
+        <title>Edit Course</title>
+        <style>
+            body {
+                padding: 20px;
+                font-family: Arial;
+            }
+
+            input,
+            select {
+                display: block;
+                margin: 10px 0;
+                padding: 5px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Edit Course - SIMPLE VERSION</h1>
+
+        <p>Course Name: {{ course.name }}</p>
+        <p>Current Level ID: {{ course.level.id }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div>
+                <label>Course Name:</label>
+                <input type="text" name="name" value="{{ course.name }}" required>
+            </div>
+
+            <div>
+                <label>Course Code:</label>
+                <input type="text" name="code" value="{{ course.code }}" required>
+            </div>
+
+            <div>
+                <label>Academic Level:</label>
+                <select name="level" required>
+                    <option value="">Select Level</option>
+                    {% for level in levels %}
+                    <option value="{{ level.id }}" {% if level.id==course.level.id %}selected{% endif %}>
+                        Year {{ level.year }} Semester {{ level.semester }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Duration (Years):</label>
+                <input type="number" name="duration_years"
+                    value="{% if course.duration_years %}{{ course.duration_years }}{% else %}3{% endif %}" min="1"
+                    max="10" required>
+            </div>
+
+            <div>
+                <input type="checkbox" name="is_active" id="is_active" {% if course.is_active %}checked{% endif %}>
+                <label for="is_active">Active Course</label>
+            </div>
+
+            <button type="submit">Update Course</button>
+            <a href="/attendance/admin/courses/">Cancel</a>
+        </form>
+
+        <hr>
+        <h3>Debug Info:</h3>
+        <p>Course ID: {{ course.id }}</p>
+        <p>Course Level ID: {{ course.level.id }}</p>
+        <p>Levels available: {{ levels|length }}</p>
+        <ul>
+            {% for level in levels %}
+            <li>ID: {{ level.id }} - Year {{ level.year }} Semester {{ level.semester }}</li>
+            {% endfor %}
+        </ul>
+    </body>
+
+    </html>
+    EOF

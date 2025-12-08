@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+
+{% block title %}Lecturer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-chalkboard-teacher"></i> Lecturer Dashboard</h2>
+            <p class="text-muted">Welcome, {{ user.get_full_name }}</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card stat-card total">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Total Sessions</h6>
+                            <h3 class="mb-0">{{ total_sessions|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-alt fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card pending">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Today's Sessions</h6>
+                            <h3 class="mb-0">{{ today_sessions.count|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card present">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Assigned Units</h6>
+                            <h3 class="mb-0">{{ assigned_units.count|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-book fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card absent">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">Upcoming Sessions</h6>
+                            <h3 class="mb-0">{{ upcoming_sessions.count|default:"0" }}</h3>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-plus fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Assigned Units -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-book"></i> My Assigned Units</h5>
+                </div>
+                <div class="card-body">
+                    {% if assigned_units %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Unit Code</th>
+                                    <th>Unit Name</th>
+                                    <th>Course</th>
+                                    <th>Semester</th>
+                                    <th>Credit Hours</th>
+                                    <th>Enrolled Students</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for unit in assigned_units %}
+                                <tr>
+                                    <td><strong>{{ unit.code }}</strong></td>
+                                    <td>{{ unit.name }}</td>
+                                    <td>
+                                        {% if unit.course %}
+                                        {{ unit.course.name }}
+                                        <small class="text-muted d-block">{{ unit.course.code }}</small>
+                                        {% else %}
+                                        <span class="text-muted">Not assigned</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>Semester {{ unit.semester }}</td>
+                                    <td>{{ unit.credit_hours }} hrs</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ unit.students.count }}</span> students
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'create_attendance_session' %}?unit={{ unit.id }}"
+                                                class="btn btn-sm btn-success">
+                                                <i class="fas fa-plus"></i> Create Session
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> View Students
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <h6>No units assigned yet</h6>
+                        <p class="mb-0">Contact the administrator to get units assigned to you.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Sessions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Today's Sessions</h5>
+                </div>
+                <div class="card-body">
+                    {% if today_sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Unit</th>
+                                    <th>Time</th>
+                                    <th>Location</th>
+                                    <th>Code</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in today_sessions %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ session.unit.code }}</strong>
+                                        <br>
+                                        <small>{{ session.unit.name }}</small>
+                                    </td>
+                                    <td>
+                                        {{ session.start_time|time:"H:i" }} - {{ session.end_time|time:"H:i" }}
+                                        <br>
+                                        <small class="text-muted">{{ session.session_date }}</small>
+                                    </td>
+                                    <td>{{ session.location }}</td>
+                                    <td>
+                                        {% if session.is_code_valid %}
+                                        <div class="text-center">
+                                            <div class="attendance-code mb-1">
+                                                <strong>{{ session.attendance_code }}</strong>
+                                            </div>
+                                            <small class="text-muted">
+                                                Expires: {{ session.code_expires_at|time:"H:i" }}
+                                            </small>
+                                        </div>
+                                        {% else %}
+                                        <span class="badge bg-secondary">No active code</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if session.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'view_session_attendance' session.id %}"
+                                                class="btn btn-sm btn-info" title="View Attendance">
+                                                <i class="fas fa-users"></i>
+                                            </a>
+                                            {% if not session.is_code_valid %}
+                                            <button class="btn btn-sm btn-warning generate-code"
+                                                data-session-id="{{ session.id }}" title="Generate New Code">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                            {% endif %}
+                                            <a href="{% url 'download_attendance_pdf' session.id %}"
+                                                class="btn btn-sm btn-success" title="Download PDF">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <h6>No sessions scheduled for today</h6>
+                        <p class="mb-0">Create a new session for your assigned units.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+                                    <h5>Create Session</h5>
+                                    <p class="text-muted">Create new attendance session</p>
+                                    <a href="{% url 'create_attendance_session' %}"
+                                        class="btn btn-primary btn-lg w-100">
+                                        Create Session
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-history fa-3x text-warning mb-3"></i>
+                                    <h5>View History</h5>
+                                    <p class="text-muted">View past attendance records</p>
+                                    <button class="btn btn-warning btn-lg w-100" disabled>
+                                        Coming Soon
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                                    <h5>Analytics</h5>
+                                    <p class="text-muted">View attendance analytics</p>
+                                    <button class="btn btn-info btn-lg w-100" disabled>
+                                        Coming Soon
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Sessions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Upcoming Sessions (Next 7 Days)</h5>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Unit</th>
+                                    <th>Time</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in upcoming_sessions %}
+                                <tr>
+                                    <td>
+                                        {{ session.session_date|date:"D, M d" }}
+                                        <br>
+                                        <small class="text-muted">{{ session.session_date|date:"Y" }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ session.unit.code }}</strong>
+                                        <br>
+                                        <small>{{ session.unit.name }}</small>
+                                    </td>
+                                    <td>{{ session.start_time|time:"H:i" }} - {{ session.end_time|time:"H:i" }}</td>
+                                    <td>{{ session.location }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'view_session_attendance' session.id %}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <h6>No upcoming sessions</h6>
+                        <p class="mb-0">Create new sessions for upcoming classes.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .attendance-code {
+        font-family: 'Courier New', monospace;
+        font-size: 1.2rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        padding: 5px 10px;
+        border: 2px dashed #ddd;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .stat-card {
+        border-left: 5px solid;
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card.total {
+        border-left-color: #007bff;
+    }
+
+    .stat-card.pending {
+        border-left-color: #ffc107;
+    }
+
+    .stat-card.present {
+        border-left-color: #28a745;
+    }
+
+    .stat-card.absent {
+        border-left-color: #dc3545;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('.generate-code').click(function () {
+            const sessionId = $(this).data('session-id');
+            const button = $(this);
+
+            $.ajax({
+                url: `/attendance/generate-code/${sessionId}/`,
+                method: 'GET',
+                beforeSend: function () {
+                    button.html('<i class="fas fa-spinner fa-spin"></i>');
+                    button.prop('disabled', true);
+                },
+                success: function (response) {
+                    if (response.error) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Code Still Valid',
+                            text: response.error,
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'New Code Generated!',
+                            html: `Attendance Code: <br><div class="attendance-code mt-2 mb-3">${response.code}</div>
+                                  <small>Expires at: ${response.expires_at}</small>`,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to generate code. Please try again.',
+                    });
+                },
+                complete: function () {
+                    button.html('<i class="fas fa-sync-alt"></i>');
+                    button.prop('disabled', false);
+                }
+            });
+        });
+    });
+</script>
+
+<!-- Include SweetAlert for better alerts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% endblock %}

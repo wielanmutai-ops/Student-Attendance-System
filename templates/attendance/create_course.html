@@ -1,0 +1,60 @@
+{% extends 'attendance/base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-graduation-cap me-2"></i>Create New Course
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Course Name *</label>
+                        <input type="text" name="name" class="form-control" id="name" required
+                            placeholder="e.g., Bachelor of Science in Information Technology">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="level" class="form-label">Academic Level *</label>
+                            <select name="level" class="form-select" id="level" required>
+                                <option value="">Select Academic Level</option>
+                                {% for level in levels %}
+                                <option value="{{ level.id }}">
+                                    Year {{ level.year }} Semester {{ level.semester }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Select the Year/Semester this course belongs to</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="duration_years" class="form-label">Duration (Years) *</label>
+                            <input type="number" name="duration_years" class="form-control" id="duration_years"
+                                value="3" min="1" max="10" required>
+                            <small class="text-muted">Number of years for course completion</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="is_active" class="form-check-input" id="is_active" checked>
+                        <label class="form-check-label" for="is_active">Active Course</label>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i> Create Course
+                        </button>
+                        <a href="/attendance/admin/courses/" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

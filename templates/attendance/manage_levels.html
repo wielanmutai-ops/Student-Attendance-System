@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Levels{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-layer-group"></i> Manage Academic Levels</h2>
+                <a href="{% url 'create_level' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Level
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Academic Levels (Year/Semester)</h5>
+                </div>
+                <div class="card-body">
+                    {% if levels %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Year</th>
+                                    <th>Semester</th>
+                                    <th>Full Name</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for level in levels %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><strong>Year {{ level.year }}</strong></td>
+                                    <td><span class="badge bg-secondary">Semester {{ level.semester }}</span></td>
+                                    <td>Year {{ level.year }} Semester {{ level.semester }}</td>
+                                    <td>
+                                        {% if level.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <form method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="level_id" value="{{ level.id }}">
+                                                <button type="submit" name="edit" class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                            </form>
+                                            <form method="POST" class="d-inline"
+                                                onsubmit="return confirm('Delete Year {{ level.year }} Semester {{ level.semester }}?');">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="level_id" value="{{ level.id }}">
+                                                <button type="submit" name="delete" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No academic levels found. <a href="{% url 'create_level' %}">Create the first level</a>.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

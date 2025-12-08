@@ -1,0 +1,186 @@
+﻿{% extends "attendance/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="fas fa-book text-primary me-2"></i>Create New Unit
+            </h2>
+            <p class="text-muted mb-0">Add a new academic unit to the system</p>
+        </div>
+        <a href="{% url 'manage_units' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Units
+        </a>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Form Card -->
+    <div class="card border-0 shadow">
+        <div class="card-body p-4">
+            <form method="POST" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- Unit Code -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_code" class="form-label required">Unit Code</label>
+                        {{ form.code }}
+                        {% if form.code.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.code.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Unit Name -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_name" class="form-label required">Unit Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.name.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Course Selection -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_course" class="form-label">Course (Optional)</label>
+                        {{ form.course }}
+                        <div class="form-text text-muted">Leave empty if not associated with a specific course</div>
+                        {% if form.course.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.course.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Academic Level Selection -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_academic_level" class="form-label required">Academic Level</label>
+                        {{ form.academic_level }}
+                        {% if form.academic_level.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.academic_level.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Academic Year -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_academic_year" class="form-label">Academic Year</label>
+                        {{ form.academic_year }}
+                        {% if form.academic_year.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.academic_year.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Core Unit Toggle -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label d-block">Unit Type</label>
+                        <div class="form-check form-switch">
+                            {{ form.is_core }}
+                            <label class="form-check-label" for="id_is_core">
+                                <i class="fas fa-star text-warning me-1"></i>Core Unit
+                                <span class="text-muted d-block small">Uncheck for elective unit</span>
+                            </label>
+                        </div>
+                        {% if form.is_core.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.is_core.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Credit Hours -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_credit_hours" class="form-label">Credit Hours</label>
+                        {{ form.credit_hours }}
+                        {% if form.credit_hours.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.credit_hours.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Lecturer Selection -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_lecturer" class="form-label">Lecturer (Optional)</label>
+                        {{ form.lecturer }}
+                        <div class="form-text text-muted">Assign later if not available</div>
+                        {% if form.lecturer.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.lecturer.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-12 mb-3">
+                        <label for="id_description" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.description.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-flex justify-content-between align-items-center border-top pt-4 mt-3">
+                    <a href="{% url 'manage_units' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-1"></i> Create Unit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation and enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        // Simple client-side validation
+        const code = document.getElementById('id_code').value.trim();
+        const name = document.getElementById('id_name').value.trim();
+        const academicLevel = document.getElementById('id_academic_level').value;
+        
+        if (!code || !name || !academicLevel) {
+            e.preventDefault();
+            alert('Please fill in all required fields (Unit Code, Unit Name, and Academic Level)');
+            return false;
+        }
+    });
+    
+    // Auto-format unit code to uppercase
+    const codeInput = document.getElementById('id_code');
+    codeInput.addEventListener('blur', function() {
+        this.value = this.value.toUpperCase();
+    });
+});
+</script>
+{% endblock %}

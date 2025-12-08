@@ -1,0 +1,163 @@
+{% extends "attendance/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="fas fa-calendar-plus text-primary me-2"></i>Create Attendance Session
+            </h2>
+            <p class="text-muted mb-0">Schedule a new attendance session for your unit</p>
+        </div>
+        <a href="{% url 'lecturer_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card border-0 shadow">
+        <div class="card-body p-4">
+            <form method="POST" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- Unit Selection -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_unit" class="form-label required">Unit</label>
+                        {{ form.unit }}
+                        {% if form.unit.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.unit.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Session Date -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_session_date" class="form-label required">Session Date</label>
+                        {{ form.session_date }}
+                        {% if form.session_date.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.session_date.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Start Time -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_start_time" class="form-label required">Start Time</label>
+                        {{ form.start_time }}
+                        {% if form.start_time.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.start_time.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- End Time -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_end_time" class="form-label required">End Time</label>
+                        {{ form.end_time }}
+                        <div class="form-text text-muted">Maximum 3 hours duration</div>
+                        {% if form.end_time.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.end_time.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Location -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_location" class="form-label required">Location/Venue</label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.location.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Session Type -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_session_type" class="form-label required">Session Type</label>
+                        {{ form.session_type }}
+                        {% if form.session_type.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.session_type.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Delivery Mode -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_delivery_mode" class="form-label required">Delivery Mode</label>
+                        {{ form.delivery_mode }}
+                        {% if form.delivery_mode.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.delivery_mode.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-flex justify-content-between align-items-center border-top pt-4 mt-3">
+                    <a href="{% url 'lecturer_dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-calendar-check me-1"></i> Create Session
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Session Guidelines -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+            <h6 class="card-title mb-3">
+                <i class="fas fa-info-circle text-info me-2"></i>Session Guidelines
+            </h6>
+            <ul class="list-unstyled mb-0">
+                <li class="mb-2"><i class="fas fa-clock text-success me-2"></i>Maximum session duration: 3 hours</li>
+                <li class="mb-2"><i class="fas fa-calendar text-success me-2"></i>Session types: Normal, Make-up, Extra, or Exam</li>
+                <li class="mb-2"><i class="fas fa-laptop-house text-success me-2"></i>Delivery modes: Physical, Virtual, or Hybrid</li>
+                <li><i class="fas fa-qrcode text-success me-2"></i>Attendance code will be generated after creation</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        const unit = document.getElementById('id_unit').value;
+        const sessionDate = document.getElementById('id_session_date').value;
+        const startTime = document.getElementById('id_start_time').value;
+        const endTime = document.getElementById('id_end_time').value;
+        const location = document.getElementById('id_location').value;
+        const sessionType = document.getElementById('id_session_type').value;
+        const deliveryMode = document.getElementById('id_delivery_mode').value;
+        
+        if (!unit || !sessionDate || !startTime || !endTime || !location || !sessionType || !deliveryMode) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+        
+        // Validate time (basic check)
+        if (startTime >= endTime) {
+            e.preventDefault();
+            alert('End time must be after start time.');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}
